@@ -24,29 +24,28 @@ module "dcos-masters-lb" {
 }
 ```
 
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| additional_listener | List of additional listeners | string | `<list>` | no |
-| cluster_name | Name of the DC/OS cluster | string | - | yes |
-| cross_zone_load_balancing | Enable cross-zone load balancing | string | `true` | no |
-| elb_name_format | Printf style format for naming the ELB. Gets truncated to 32 characters. (input cluster_name) | string | `load-balancer-%s` | no |
-| health_check | Health check definition. | map | `<map>` | no |
-| https_acm_cert_arn | ACM certifacte to be used. | string | `` | no |
-| instances | List of instance IDs | list | - | yes |
-| internal | This ELB is internal only | string | `false` | no |
-| listener | List of listeners. By default HTTP and HTTPS are set. If set it overrides the default listeners. | string | `<list>` | no |
-| load_balancer_type | Load Balancer type. Allowed values network, application | string | `network` | no |
-| num_instances | How many instances should be created | string | - | yes |
-| security_groups | Security Group IDs to use | list | `<list>` | no |
-| subnet_ids | List of subnet IDs created in this network | list | - | yes |
+| cluster\_name | Name of the DC/OS cluster | string | n/a | yes |
+| instances | List of instance IDs | list | n/a | yes |
+| num\_instances | How many instances should be created | string | n/a | yes |
+| subnet\_ids | List of subnet IDs created in this network | list | n/a | yes |
+| additional\_listener | List of additional listeners | list | `<list>` | no |
+| cross\_zone\_load\_balancing | Enable cross-zone load balancing | string | `"true"` | no |
+| elb\_name\_format | Printf style format for naming the ELB. Gets truncated to 32 characters. (input cluster_name) | string | `"load-balancer-%s"` | no |
+| health\_check | Health check definition. | map | `<map>` | no |
+| https\_acm\_cert\_arn | ACM certifacte to be used. | string | `""` | no |
+| internal | This ELB is internal only | string | `"false"` | no |
+| listener | List of listeners. By default HTTP and HTTPS are set. If set it overrides the default listeners. | list | `<list>` | no |
+| load\_balancer\_type | Load Balancer type. Allowed values network, application | string | `"network"` | no |
+| security\_groups | Security Group IDs to use | list | `<list>` | no |
 | tags | Add custom tags to all resources | map | `<map>` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| dns_name | DNS Name of the master load balancer |
+| dns\_name | DNS Name of the master load balancer |
 
