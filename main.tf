@@ -73,11 +73,11 @@ locals {
 
   default_listeners = [
     {
-      port     = 80
+      port     = 8080
       protocol = "${var.load_balancer_type == "application" ? "http" : "tcp"}"
     },
     {
-      port            = 443
+      port            = 8443
       protocol        = "${var.load_balancer_type == "application" ? "https" : "tcp"}"
       certificate_arn = "${var.load_balancer_type == "application" ? coalesce(var.https_acm_cert_arn, "selfsigned") : ""}"
     },
