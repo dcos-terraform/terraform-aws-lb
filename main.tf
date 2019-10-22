@@ -58,7 +58,7 @@ resource "tls_self_signed_cert" "selfsigned" {
 
 resource "aws_iam_server_certificate" "selfsigned" {
   count            = "${var.disable ? 0 : 1}"
-  name             = "${format(var.elb_name_format,local.cluster_name)}-cert-${element(tls_self_signed_cert.selfsigned.*.validity_start_time,0)}"
+  name             = "${format(var.elb_name_format,local.cluster_name)}-cert-${replace(element(tls_self_signed_cert.selfsigned.*.validity_start_time,0), "/[:+.]/", "-")}"
   certificate_body = "${element(tls_self_signed_cert.selfsigned.*.cert_pem,0)}"
   private_key      = "${element(tls_private_key.selfsigned.*.private_key_pem,0)}"
 
