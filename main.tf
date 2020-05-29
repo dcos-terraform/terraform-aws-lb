@@ -10,7 +10,7 @@
  *```hcl
  * module "dcos-masters-lb" {
  *   source  = "terraform-dcos/lb/aws"
- *   version = "~> 0.2.0"
+ *   version = "~> 0.3.0"
  *
  *   cluster_name = "production"
  *
