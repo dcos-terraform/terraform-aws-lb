@@ -100,7 +100,7 @@ locals {
     concat(local.default_listeners, var.additional_listener),
   )
 
-  instances = [coalescelist(var.instances, [""])]
+  listeners = { for l in local.concat_listeners : l["port"] => l }
 }
 
 resource "aws_lb" "loadbalancer" {
@@ -133,40 +133,41 @@ resource "aws_lb" "loadbalancer" {
 }
 
 resource "aws_lb_listener" "listeners" {
-  count             = var.disable ? 0 : length(local.concat_listeners)
+  for_each          = { for l in local.concat_listeners : l["port"] => l }
   load_balancer_arn = element(aws_lb.loadbalancer.*.arn, 0)
-  port              = local.concat_listeners[count.index]["port"]
+  port              = each.key
   protocol = upper(
     lookup(
-      local.concat_listeners[count.index],
+      each.value,
       "protocol",
       var.load_balancer_type == "application" ? "http" : "tcp",
     ),
   )
 
-  certificate_arn = lookup(local.concat_listeners[count.index], "certificate_arn", "") == "selfsigned" ? aws_iam_server_certificate.selfsigned[0].arn : lookup(local.concat_listeners[count.index], "certificate_arn", "")
+  certificate_arn = lookup(each.value, "certificate_arn", "") == "selfsigned" ? aws_iam_server_certificate.selfsigned[0].arn : lookup(each.value, "certificate_arn", "")
 
   default_action {
     type             = "forward"
-    target_group_arn = element(aws_lb_target_group.targetgroup.*.arn, count.index)
+    target_group_arn = aws_lb_target_group.targetgroup[each.key].arn
   }
 }
 
 resource "aws_lb_target_group" "targetgroup" {
-  count = var.disable ? 0 : length(local.concat_listeners)
-  port  = local.concat_listeners[count.index]["port"]
+  for_each = { for l in local.concat_listeners : l["port"] => l }
+  port     = each.key
   protocol = upper(
     lookup(
-      local.concat_listeners[count.index],
+      each.value,
       "protocol",
       var.load_balancer_type == "application" ? "http" : "tcp",
     ),
   )
+
   name = "${substr(
     local.elb_name,
     0,
     length(local.elb_name) >= 24 ? 23 : length(local.elb_name),
-  )}-tg-${local.concat_listeners[count.index]["port"]}"
+  )}-tg-${each.key}"
   tags = merge(
     var.tags,
     {
@@ -185,22 +186,18 @@ resource "aws_lb_target_group" "targetgroup" {
   health_check {
     protocol = upper(
       lookup(
-        local.concat_listeners[count.index],
+        each.value,
         "protocol",
         var.load_balancer_type == "application" ? "http" : "tcp",
       ),
     )
-    port = local.concat_listeners[count.index]["port"]
+    port = each.key
   }
 }
 
 resource "aws_lb_target_group_attachment" "attachment" {
-  count = var.disable ? 0 : var.num_instances * length(local.concat_listeners)
-  target_group_arn = element(
-    aws_lb_target_group.targetgroup.*.arn,
-    ceil(count.index / length(local.instances)),
-  )
-  target_id = element(var.instances, count.index)
-  port      = local.concat_listeners[ceil(count.index / length(local.instances))]["port"]
+  for_each         = { for i in setproduct(var.instances, keys(local.listeners)) : "${i[0]}_${i[1]}" => i }
+  target_group_arn = aws_lb_target_group.targetgroup[each.value[1]].arn
+  target_id        = each.value[0]
+  port             = each.value[1]
 }
-
