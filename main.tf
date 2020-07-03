@@ -196,8 +196,8 @@ resource "aws_lb_target_group" "targetgroup" {
 }
 
 resource "aws_lb_target_group_attachment" "attachment" {
-  for_each         = { for i in setproduct(var.instances, keys(local.listeners)) : "${i[0]}_${i[1]}" => i }
+  for_each         = { for i in setproduct(range(var.num_instances), [for l in local.concat_listeners : l["port"]]) : "${i[0]}_${i[1]}" => i }
   target_group_arn = aws_lb_target_group.targetgroup[each.value[1]].arn
-  target_id        = each.value[0]
+  target_id        = element(var.instances, each.value[0])
   port             = each.value[1]
 }
