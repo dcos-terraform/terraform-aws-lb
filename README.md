@@ -1,7 +1,7 @@
 [![Build Status](https://jenkins-terraform.mesosphere.com/service/dcos-terraform-jenkins/job/dcos-terraform/job/terraform-aws-lb/job/master/badge/icon)](https://jenkins-terraform.mesosphere.com/service/dcos-terraform-jenkins/job/dcos-terraform/job/terraform-aws-lb/job/master/)
 AWS LB - Application and Network Load Balancer
 ============
-This module create Application and Network Load Balancers. Beaware that Application supports only "HTTP" and "HTTPS" whereas Netowrk only supports "TCP" and "UDP"
+This module creates Application and Network Load Balancers. Be aware that Application supports only "HTTP" and "HTTPS" whereas Netowrk only supports "TCP" and "UDP"
 
 EXAMPLE
 -------
