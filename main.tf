@@ -74,7 +74,7 @@ resource "aws_iam_server_certificate" "selfsigned" {
 }
 
 data "aws_subnet" "selected" {
-  id = element(var.subnet_ids, 0)
+  id = try(element(var.subnet_ids, 0), "")
 }
 
 // Only 32 characters allowed for name. So we have to use substring
