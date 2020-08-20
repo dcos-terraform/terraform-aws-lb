@@ -133,7 +133,7 @@ resource "aws_lb" "loadbalancer" {
 }
 
 resource "aws_lb_listener" "listeners" {
-  for_each          = { for l in local.concat_listeners : l["port"] => l }
+  for_each          = { for l in local.concat_listeners : l["port"] => l if var.disable != true }
   load_balancer_arn = element(aws_lb.loadbalancer.*.arn, 0)
   port              = each.key
   protocol = upper(
