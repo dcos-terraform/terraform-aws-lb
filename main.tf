@@ -179,7 +179,7 @@ resource "aws_lb_target_group" "targetgroup" {
   vpc_id = data.aws_subnet.selected.vpc_id
 
   stickiness {
-    type    = "lb_cookie"
+    type    = var.load_balancer_type == "application" ? "lb_cookie" : "source_ip"
     enabled = false
   }
 
